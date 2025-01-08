@@ -5,8 +5,6 @@
     <!-- Required BabylonJS libraries -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <!-- Dice bundle -->
-    <script src="lib/dice-bundle.single.js"></script>
     <style>
         #dice-box {
             width: 400px;
@@ -20,14 +18,33 @@
     <div id="dice-box"></div>
 
     <script>
+        // Function to load the dice bundle
+        function loadDiceBundle() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'lib/dice-bundle.js';
+                script.onload = () => {
+                    console.log('Dice bundle loaded successfully');
+                    resolve();
+                };
+                script.onerror = (error) => {
+                    console.error('Error loading dice bundle:', error);
+                    reject(error);
+                };
+                document.head.appendChild(script);
+            });
+        }
+
         // Wait for everything to load
         window.addEventListener('load', async () => {
-            console.log('Page loaded, checking DiceBox availability:', typeof DiceBox);
-
             try {
+                console.log('Page loaded, loading dice bundle...');
+                await loadDiceBundle();
+                console.log('DiceBox availability:', typeof window.DiceBox);
+
                 // Initialize DiceBox
                 console.log('Creating DiceBox instance...');
-                const box = new DiceBox({
+                const box = new window.DiceBox({
                     element: '#dice-box',
                     assetPath: 'assets/',
                     theme: 'default',
