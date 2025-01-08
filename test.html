@@ -2,12 +2,15 @@
 <html>
 <head>
     <title>Dice Box Test</title>
-    <script src="lib/dice-bundle.js"></script>
+    <script src="lib/dice-bundle.js" type="module"></script>
 </head>
 <body>
     <div id="app"></div>
-    <script>
-        function initDiceBox() {
+    <script type="module">
+        // Import the module
+        import { DiceBox } from './lib/dice-bundle.js';
+        
+        async function initDiceBox() {
             console.log('Starting dice-box test...');
             
             // Create container
@@ -32,25 +35,23 @@
                     }
                 };
                 
-                // Use the Q constructor from the bundle
-                if (typeof Q !== 'function') {
-                    throw new Error('Q constructor not found. Available globals: ' + Object.keys(window).join(', '));
+                console.log('Creating DiceBox with config:', config);
+                const box = new DiceBox(config);
+                
+                // Wait for the box to be ready
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                try {
+                    console.log('Attempting to roll dice...');
+                    const results = await box.roll('2d6');
+                    console.log('Roll results:', results);
+                } catch (rollError) {
+                    console.error('Error during roll:', rollError);
                 }
-                
-                const box = new Q(config);
-                
-                // Wait a moment for initialization
-                setTimeout(() => {
-                    try {
-                        box.roll('2d6');
-                        console.log('Roll initiated');
-                    } catch (rollError) {
-                        console.error('Error during roll:', rollError);
-                    }
-                }, 1000);
                 
             } catch (error) {
                 console.error('Error creating DiceBox:', error);
+                console.log('Available exports:', Object.keys(window));
             }
         }
 
