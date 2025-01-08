@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dice Box Test</title>
+    <script src="lib/dice-bundle.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+    <script>
+        function initDiceBox() {
+            console.log('Starting dice-box test...');
+            
+            // Create container
+            const container = document.createElement('div');
+            container.id = 'dice-box';
+            container.style.cssText = `
+                width: 100%;
+                height: 300px;
+                position: relative;
+                background: #000000;
+            `;
+            document.getElementById('app').appendChild(container);
+
+            try {
+                // Create box with minimal config
+                const box = new DiceBox({
+                    element: '#dice-box',
+                    assetPath: 'assets/',  // Updated path to match your GitHub Pages structure
+                    theme: 'default',
+                    scale: 6,
+                    light: {
+                        intensity: 1
+                    }
+                });
+                
+                // Initialize and store instance
+                box.initialize().then(() => {
+                    console.log('Box initialized');
+                    
+                    // Test roll
+                    box.roll('2d6').then(results => {
+                        console.log('Roll results:', results);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error creating DiceBox:', error);
+            }
+        }
+
+        // Run the test when page loads
+        window.addEventListener('load', initDiceBox);
+    </script>
+</body>
+</html>
