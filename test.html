@@ -19,11 +19,6 @@
                 script.src = 'lib/dice-bundle.js';
                 script.onload = () => {
                     console.log('Dice bundle loaded successfully');
-                    // Log all properties defined on window after loading
-                    const newProps = Object.keys(window).filter(key => 
-                        !['self', 'document', 'name', 'location'].includes(key)
-                    );
-                    console.log('New window properties:', newProps);
                     resolve();
                 };
                 script.onerror = (error) => {
@@ -50,19 +45,12 @@
                 document.getElementById('app').appendChild(container);
                 console.log('Container created');
 
-                // Store initial window properties
-                const initialProps = new Set(Object.keys(window));
-                
                 // Load the dice bundle
                 await loadDiceBundle();
-
-                // Find new properties added to window
-                const currentProps = new Set(Object.keys(window));
-                const newProps = [...currentProps].filter(prop => !initialProps.has(prop));
-                console.log('New properties after loading:', newProps);
+                console.log('Bundle loaded, DiceBox available:', !!window.DiceBox);
 
                 // Wait a moment for initialization
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 1000));
 
                 const config = {
                     element: '#dice-box',
@@ -74,32 +62,35 @@
                     }
                 };
                 
-                console.log('Available constructors:', {
-                    d: typeof d !== 'undefined' ? 'defined' : 'undefined',
-                    A: typeof A !== 'undefined' ? 'defined' : 'undefined',
-                    Q: typeof Q !== 'undefined' ? 'defined' : 'undefined',
-                    DiceBox: typeof DiceBox !== 'undefined' ? 'defined' : 'undefined'
-                });
-                
-                // Try to find the constructor
-                const DiceConstructor = window.DiceBox || window.dice || window.Dice;
-                if (!DiceConstructor) {
-                    console.log('Bundle exports:', Object.keys(window));
-                    throw new Error('Dice constructor not found. Available globals logged above.');
-                }
-                
                 console.log('Creating DiceBox with config:', config);
-                const box = new DiceConstructor(config);
-                console.log('Box created:', box);
+                
+                // Create instance and store on window for debugging
+                window.diceBoxInstance = new window.DiceBox(config);
+                console.log('Box created:', window.diceBoxInstance);
+                
+                // Log available methods
+                console.log('Methods on box:', 
+                    Object.getOwnPropertyNames(Object.getPrototypeOf(window.diceBoxInstance))
+                );
 
                 // Try to roll the dice
                 console.log('Attempting to roll dice...');
-                const results = await box.roll('2d6');
+                
+                // First try to prepare the box
+                if (typeof window.diceBoxInstance.prepare === 'function') {
+                    await window.diceBoxInstance.prepare();
+                }
+                
+                const results = await window.diceBoxInstance.roll('2d6');
                 console.log('Roll results:', results);
                 
             } catch (error) {
                 console.error('Error in initialization:', error);
-                console.log('Window object keys:', Object.keys(window));
+                if (window.diceBoxInstance) {
+                    console.log('Box instance methods:', 
+                        Object.getOwnPropertyNames(Object.getPrototypeOf(window.diceBoxInstance))
+                    );
+                }
             }
         }
 
