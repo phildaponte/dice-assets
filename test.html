@@ -19,6 +19,11 @@
                 script.src = 'lib/dice-bundle.js';
                 script.onload = () => {
                     console.log('Dice bundle loaded successfully');
+                    // Log all properties defined on window after loading
+                    const newProps = Object.keys(window).filter(key => 
+                        !['self', 'document', 'name', 'location'].includes(key)
+                    );
+                    console.log('New window properties:', newProps);
                     resolve();
                 };
                 script.onerror = (error) => {
@@ -45,8 +50,16 @@
                 document.getElementById('app').appendChild(container);
                 console.log('Container created');
 
+                // Store initial window properties
+                const initialProps = new Set(Object.keys(window));
+                
                 // Load the dice bundle
                 await loadDiceBundle();
+
+                // Find new properties added to window
+                const currentProps = new Set(Object.keys(window));
+                const newProps = [...currentProps].filter(prop => !initialProps.has(prop));
+                console.log('New properties after loading:', newProps);
 
                 // Wait a moment for initialization
                 await new Promise(resolve => setTimeout(resolve, 500));
@@ -61,36 +74,32 @@
                     }
                 };
                 
-                console.log('Creating DiceBox with config:', config);
+                console.log('Available constructors:', {
+                    d: typeof d !== 'undefined' ? 'defined' : 'undefined',
+                    A: typeof A !== 'undefined' ? 'defined' : 'undefined',
+                    Q: typeof Q !== 'undefined' ? 'defined' : 'undefined',
+                    DiceBox: typeof DiceBox !== 'undefined' ? 'defined' : 'undefined'
+                });
                 
-                // Try to find the correct constructor
-                const DiceConstructor = window.Q || window.A;
+                // Try to find the constructor
+                const DiceConstructor = window.DiceBox || window.dice || window.Dice;
                 if (!DiceConstructor) {
-                    throw new Error('Dice constructor not found');
+                    console.log('Bundle exports:', Object.keys(window));
+                    throw new Error('Dice constructor not found. Available globals logged above.');
                 }
                 
+                console.log('Creating DiceBox with config:', config);
                 const box = new DiceConstructor(config);
                 console.log('Box created:', box);
 
-                // Initialize if needed
-                if (typeof box.initialize === 'function') {
-                    await box.initialize();
-                    console.log('Box initialized');
-                }
-                
                 // Try to roll the dice
                 console.log('Attempting to roll dice...');
-                if (typeof box.roll !== 'function') {
-                    throw new Error('Roll method not found on box instance');
-                }
-                
                 const results = await box.roll('2d6');
                 console.log('Roll results:', results);
                 
             } catch (error) {
                 console.error('Error in initialization:', error);
-                // Log available constructors
-                console.log('Available globals:', Object.keys(window));
+                console.log('Window object keys:', Object.keys(window));
             }
         }
 
