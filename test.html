@@ -56,7 +56,8 @@
                     scale: 6,
                     light: {
                         intensity: 1
-                    }
+                    },
+                    wasmPath: 'assets/ammo/'  // Add path to WASM file
                 };
                 
                 console.log('Creating DiceBox with config:', config);
@@ -86,6 +87,18 @@
                 
             } catch (error) {
                 console.error('Error in initialization:', error);
+                // Log the error details
+                if (error.message && error.message.includes('chunk')) {
+                    console.log('Chunk loading error. Please ensure all bundle files are present.');
+                    // Try to fetch the missing chunk to see the actual error
+                    fetch('lib/617.dice-bundle.js')
+                        .then(response => {
+                            console.log('Chunk response:', response.status);
+                            return response.text();
+                        })
+                        .then(text => console.log('Chunk content:', text))
+                        .catch(err => console.log('Chunk fetch error:', err));
+                }
                 if (window.diceBoxInstance) {
                     console.log('Box instance methods:', 
                         Object.getOwnPropertyNames(Object.getPrototypeOf(window.diceBoxInstance))
