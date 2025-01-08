@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dice Test v2</title>
+    <!-- Required BabylonJS libraries -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Dice bundle -->
+    <script src="lib/dice-bundle.js"></script>
+    <style>
+        #dice-box {
+            width: 400px;
+            height: 300px;
+            background-color: black;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="dice-box"></div>
+
+    <script>
+        // Wait for everything to load
+        window.addEventListener('load', async () => {
+            console.log('Page loaded, initializing dice...');
+
+            try {
+                // Initialize DiceBox
+                const box = new DiceBox({
+                    element: '#dice-box',
+                    assetPath: 'assets/',
+                    theme: 'default',
+                    scale: 5,
+                    onRollComplete: (results) => {
+                        console.log('Roll complete!', results);
+                    }
+                });
+
+                console.log('DiceBox initialized');
+
+                // Wait for box to be ready
+                await box.initialize();
+                console.log('DiceBox ready');
+
+                // Roll 2d6
+                console.log('Rolling 2d6...');
+                const results = await box.roll('2d6');
+                console.log('Roll started:', results);
+
+            } catch (error) {
+                console.error('Error in dice initialization or roll:', error);
+            }
+        });
+    </script>
+</body>
+</html>
