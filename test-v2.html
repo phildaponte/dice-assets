@@ -22,33 +22,57 @@
     <script>
         // Wait for everything to load
         window.addEventListener('load', async () => {
-            console.log('Page loaded, initializing dice...');
+            console.log('Page loaded, checking DiceBox availability:', typeof DiceBox);
+            console.log('DiceBox object:', DiceBox);
 
             try {
                 // Initialize DiceBox
+                console.log('Creating DiceBox instance...');
                 const box = new DiceBox({
                     element: '#dice-box',
                     assetPath: 'assets/',
                     theme: 'default',
                     scale: 5,
                     onRollComplete: (results) => {
-                        console.log('Roll complete!', results);
+                        console.log('Roll complete! Results:', results);
                     }
                 });
 
-                console.log('DiceBox initialized');
+                console.log('DiceBox instance created:', box);
+                console.log('Available methods on box:', Object.getOwnPropertyNames(box));
+                console.log('Box prototype methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(box)));
 
                 // Wait for box to be ready
-                await box.initialize();
-                console.log('DiceBox ready');
+                try {
+                    await box.initialize();
+                    console.log('DiceBox initialized and ready');
+                } catch (initError) {
+                    console.error('Error during DiceBox initialization:', initError);
+                    console.log('Initialization error details:', {
+                        message: initError.message,
+                        stack: initError.stack
+                    });
+                }
 
                 // Roll 2d6
-                console.log('Rolling 2d6...');
-                const results = await box.roll('2d6');
-                console.log('Roll started:', results);
+                console.log('Attempting to roll 2d6...');
+                try {
+                    const results = await box.roll('2d6');
+                    console.log('Roll started, promise resolved with:', results);
+                } catch (rollError) {
+                    console.error('Error during roll:', rollError);
+                    console.log('Roll error details:', {
+                        message: rollError.message,
+                        stack: rollError.stack
+                    });
+                }
 
             } catch (error) {
-                console.error('Error in dice initialization or roll:', error);
+                console.error('Error in dice initialization:', error);
+                console.log('Error details:', {
+                    message: error.message,
+                    stack: error.stack
+                });
             }
         });
     </script>
