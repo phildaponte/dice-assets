@@ -6,7 +6,7 @@
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <!-- Dice bundle -->
-    <script src="lib/dice-bundle.js"></script>
+    <script src="https://phildaponte.github.io/dice-assets/lib/dice-bundle.js"></script>
     <style>
         #dice-box {
             width: 400px;
@@ -25,11 +25,12 @@
             console.log('Page loaded, checking DiceBox availability:', typeof DiceBox);
 
             try {
-                // Initialize DiceBox
+                // Initialize DiceBox with absolute URLs
                 console.log('Creating DiceBox instance...');
                 const box = new DiceBox({
                     element: '#dice-box',
-                    assetPath: 'assets/',
+                    assetPath: 'https://phildaponte.github.io/dice-assets/assets/',
+                    libPath: 'https://phildaponte.github.io/dice-assets/lib/',
                     theme: 'default',
                     scale: 5,
                     onRollComplete: (results) => {
@@ -39,7 +40,6 @@
 
                 console.log('DiceBox instance created:', box);
 
-                // Initialize using init() instead of initialize()
                 try {
                     console.log('Calling init()...');
                     await box.init();
