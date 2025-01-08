@@ -2,29 +2,63 @@
 <html>
 <head>
     <title>Dice Box Test</title>
-    <script src="lib/dice-bundle.js" type="module"></script>
 </head>
 <body>
-    <div id="app"></div>
-    <script type="module">
-        // Import the module
-        import { DiceBox } from './lib/dice-bundle.js';
-        
-        async function initDiceBox() {
-            console.log('Starting dice-box test...');
-            
-            // Create container
-            const container = document.createElement('div');
-            container.id = 'dice-box';
-            container.style.cssText = `
-                width: 100%;
-                height: 300px;
-                position: relative;
-                background: #000000;
-            `;
-            document.getElementById('app').appendChild(container);
+    <div id="app">
+        <h1>Dice Box Test</h1>
+        <p>If you see this, the page has loaded.</p>
+    </div>
 
+    <script>
+        // Log that the initial script is running
+        console.log('Script starting...');
+
+        // Function to load the dice bundle
+        function loadDiceBundle() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'lib/dice-bundle.js';
+                script.onload = () => {
+                    console.log('Dice bundle loaded successfully');
+                    resolve();
+                };
+                script.onerror = (error) => {
+                    console.error('Error loading dice bundle:', error);
+                    reject(error);
+                };
+                document.head.appendChild(script);
+            });
+        }
+
+        async function initDiceBox() {
             try {
+                console.log('Starting dice-box initialization...');
+                
+                // Create container
+                const container = document.createElement('div');
+                container.id = 'dice-box';
+                container.style.cssText = `
+                    width: 100%;
+                    height: 300px;
+                    position: relative;
+                    background: #000000;
+                `;
+                document.getElementById('app').appendChild(container);
+                console.log('Container created');
+
+                // Load the dice bundle
+                await loadDiceBundle();
+                console.log('Available in window:', Object.keys(window));
+
+                // Wait a moment for everything to initialize
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Check what's available
+                if (typeof DiceBox === 'undefined') {
+                    console.log('Looking for DiceBox in:', window);
+                    throw new Error('DiceBox not found in global scope');
+                }
+
                 const config = {
                     element: '#dice-box',
                     assetPath: 'assets/',
@@ -37,26 +71,27 @@
                 
                 console.log('Creating DiceBox with config:', config);
                 const box = new DiceBox(config);
+                console.log('DiceBox instance created');
                 
-                // Wait for the box to be ready
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
+                // Try to roll the dice
                 try {
                     console.log('Attempting to roll dice...');
                     const results = await box.roll('2d6');
                     console.log('Roll results:', results);
                 } catch (rollError) {
                     console.error('Error during roll:', rollError);
+                    console.log('Box instance:', box);
                 }
                 
             } catch (error) {
-                console.error('Error creating DiceBox:', error);
-                console.log('Available exports:', Object.keys(window));
+                console.error('Error in initialization:', error);
+                console.log('Window object:', window);
             }
         }
 
         // Run the test when page loads
         window.addEventListener('load', initDiceBox);
+        console.log('Load event listener added');
     </script>
 </body>
 </html>
