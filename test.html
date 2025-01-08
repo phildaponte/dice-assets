@@ -22,29 +22,45 @@
             document.getElementById('app').appendChild(container);
 
             try {
+                // Log available exports
+                console.log('Available exports:', window.DiceBox);
+                
                 // Create box with minimal config
-                const box = new DiceBox({
+                const config = {
                     element: '#dice-box',
-                    assetPath: 'assets/',  // Updated path to match your GitHub Pages structure
+                    assetPath: 'assets/',
                     theme: 'default',
                     scale: 6,
                     light: {
                         intensity: 1
                     }
-                });
+                };
                 
-                // Initialize and store instance
-                box.initialize().then(() => {
-                    console.log('Box initialized');
-                    
-                    // Test roll
+                console.log('Creating DiceBox with config:', config);
+                
+                // Try different ways to access DiceBox
+                const BoxConstructor = window.DiceBox || window.dice.DiceBox || window.dice;
+                if (!BoxConstructor) {
+                    throw new Error('DiceBox constructor not found in global scope');
+                }
+                
+                const box = new BoxConstructor(config);
+                
+                if (typeof box.roll === 'function') {
+                    // Test roll directly if initialize is not available
                     box.roll('2d6').then(results => {
                         console.log('Roll results:', results);
+                    }).catch(error => {
+                        console.error('Roll error:', error);
                     });
-                });
+                } else {
+                    console.error('Roll method not found on box instance');
+                    console.log('Available methods:', Object.keys(box));
+                }
                 
             } catch (error) {
                 console.error('Error creating DiceBox:', error);
+                console.log('Window object:', window);
             }
         }
 
