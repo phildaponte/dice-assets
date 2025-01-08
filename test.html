@@ -10,7 +10,6 @@
     </div>
 
     <script>
-        // Log that the initial script is running
         console.log('Script starting...');
 
         // Function to load the dice bundle
@@ -48,16 +47,9 @@
 
                 // Load the dice bundle
                 await loadDiceBundle();
-                console.log('Available in window:', Object.keys(window));
 
-                // Wait a moment for everything to initialize
+                // Wait a moment for initialization
                 await new Promise(resolve => setTimeout(resolve, 500));
-
-                // Check what's available
-                if (typeof DiceBox === 'undefined') {
-                    console.log('Looking for DiceBox in:', window);
-                    throw new Error('DiceBox not found in global scope');
-                }
 
                 const config = {
                     element: '#dice-box',
@@ -70,22 +62,35 @@
                 };
                 
                 console.log('Creating DiceBox with config:', config);
-                const box = new DiceBox(config);
-                console.log('DiceBox instance created');
+                
+                // Try to find the correct constructor
+                const DiceConstructor = window.Q || window.A;
+                if (!DiceConstructor) {
+                    throw new Error('Dice constructor not found');
+                }
+                
+                const box = new DiceConstructor(config);
+                console.log('Box created:', box);
+
+                // Initialize if needed
+                if (typeof box.initialize === 'function') {
+                    await box.initialize();
+                    console.log('Box initialized');
+                }
                 
                 // Try to roll the dice
-                try {
-                    console.log('Attempting to roll dice...');
-                    const results = await box.roll('2d6');
-                    console.log('Roll results:', results);
-                } catch (rollError) {
-                    console.error('Error during roll:', rollError);
-                    console.log('Box instance:', box);
+                console.log('Attempting to roll dice...');
+                if (typeof box.roll !== 'function') {
+                    throw new Error('Roll method not found on box instance');
                 }
+                
+                const results = await box.roll('2d6');
+                console.log('Roll results:', results);
                 
             } catch (error) {
                 console.error('Error in initialization:', error);
-                console.log('Window object:', window);
+                // Log available constructors
+                console.log('Available globals:', Object.keys(window));
             }
         }
 
