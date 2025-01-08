@@ -49,9 +49,6 @@
                 await loadDiceBundle();
                 console.log('Bundle loaded, DiceBox available:', !!window.DiceBox);
 
-                // Wait a moment for initialization
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
                 const config = {
                     element: '#dice-box',
                     assetPath: 'assets/',
@@ -67,20 +64,23 @@
                 // Create instance and store on window for debugging
                 window.diceBoxInstance = new window.DiceBox(config);
                 console.log('Box created:', window.diceBoxInstance);
-                
-                // Log available methods
-                console.log('Methods on box:', 
-                    Object.getOwnPropertyNames(Object.getPrototypeOf(window.diceBoxInstance))
-                );
 
+                // Initialize the box
+                console.log('Initializing box...');
+                await window.diceBoxInstance.init();
+                console.log('Box initialized');
+
+                // Load the theme
+                console.log('Loading theme...');
+                await window.diceBoxInstance.loadTheme();
+                console.log('Theme loaded');
+
+                // Show the box
+                console.log('Showing box...');
+                window.diceBoxInstance.show();
+                
                 // Try to roll the dice
                 console.log('Attempting to roll dice...');
-                
-                // First try to prepare the box
-                if (typeof window.diceBoxInstance.prepare === 'function') {
-                    await window.diceBoxInstance.prepare();
-                }
-                
                 const results = await window.diceBoxInstance.roll('2d6');
                 console.log('Roll results:', results);
                 
