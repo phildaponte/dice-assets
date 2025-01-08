@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dice Assets</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dice Assets</h1>
+    <p>This repository hosts the bundled JavaScript and assets for the 3D dice roller Bubble plugin.</p>
+    
+    <h2>Repository Structure</h2>
+    <pre>
+.
+├── lib/
+│   └── dice-bundle.js      # Bundled JavaScript file
+└── assets/
+    ├── ammo/
+    │   └── ammo.wasm.wasm
+    └── themes/
+        └── default/
+            ├── default.json
+            ├── diffuse-dark.png
+            ├── diffuse-light.png
+            ├── normal.png
+            ├── specular.jpg
+            └── theme.config.json</pre>
+
+    <h2>Usage</h2>
+    <p>1. Add these scripts to your Bubble plugin header:</p>
+    <pre>
+&lt;script src="https://cdn.babylonjs.com/babylon.js">&lt;/script>
+&lt;script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js">&lt;/script>
+&lt;script src="https://[YOUR-GITHUB-USERNAME].github.io/dice-assets/lib/dice-bundle.js">&lt;/script></pre>
+
+    <p>2. Configure DiceBox in your code:</p>
+    <pre>
+const box = new DiceBox({
+    element: '#dice-box',
+    assetPath: 'https://[YOUR-GITHUB-USERNAME].github.io/dice-assets/assets/',
+    theme: 'default'
+});</pre>
+</body>
+</html>
